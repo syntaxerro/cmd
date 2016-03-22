@@ -4,6 +4,7 @@ namespace SyntaxErro\Model;
 
 use Symfony\Component\Yaml\Dumper;
 use Symfony\Component\Yaml\Parser;
+use SyntaxErro\Exception\CannotWriteException;
 use SyntaxErro\Exception\InvalidConfigException;
 
 /**
@@ -70,7 +71,7 @@ class Parameters
      * @param $key
      * @param $value
      * @param bool $autoSave
-     * @throws \RuntimeException
+     * @throws CannotWriteException
      * @return Parameters
      */
     public function set($key, $value, $autoSave = false)
@@ -78,7 +79,7 @@ class Parameters
         $this->content[$key] = $value;
         if($autoSave) {
             $dumper = new Dumper();
-            if(file_exists(static::yamlPath) && !is_writable(static::yamlPath)) throw new \RuntimeException(sprintf("Cannto write to '%s' file.", static::yamlPath));
+            if(file_exists(static::yamlPath) && !is_writable(static::yamlPath)) throw new CannotWriteException(sprintf("Cannto write to '%s' file.", static::yamlPath));
             file_put_contents(static::yamlPath, $dumper->dump($this->content, 1));
         }
         return $this;
