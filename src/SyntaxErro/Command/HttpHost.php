@@ -75,22 +75,28 @@ class HttpHost extends Command
             $domain = $input->getArgument('domain');
             $ssl = $input->getOption('ssl');
             $nginx = $input->getOption('nginx');
-            $projects = $this->askCheckSaveDir($input, $output, "What's path to directory with your all projects?", 'projects');
-            $vhosts = $this->askCheckSaveDir($input, $output, "What's path to directory with your all virtual hosts?", 'vhosts');
+            $projects = $this->askCheckSave($input, $output, "What's path to directory with your all projects?", 'projects');
+            $vhosts = $this->askCheckSave($input, $output, "What's path to directory with your all virtual hosts?", 'vhosts');
             $web = $this->askCheckSave($input, $output, "What's your web directory? Type '0' for DocumentRoot.", 'webDirectory');
-
             $email = $this->askCheckSave($input, $output, "What's your email?", 'adminEmail');
+
+            /* Validate paths to projects and vhosts. */
+            $projects = $this->validateDirectoryPath($projects);
+            $vhosts = $this->validateDirectoryPath($vhosts);
 
             /* Validate parameters from user for new vhost creating. */
             if(!is_writable($vhosts)) throw new CannotWriteException(sprintf("Cannot write to '%s' directory.", $vhosts));
             if(file_exists($vhosts.$domain.".conf")) {
                 $continueQuestion = new ConfirmationQuestion("VirtualHost exist. Do you want override? y/N", false, '/^y|Y|t|T/i');
-                if(!$questioner->ask($input, $output, $continueQuestion)) return 385;
+                if(!$questioner->ask($input, $output, $continueQuestion)) {
+                    $output->writeln("<error>Aborted by user.</error>");
+                    return 385;
+                }
             }
 
             /* Create DocumentRoot path. */
             $documentRoot = $web ?
-                preg_replace('@\/\/@', DIRECTORY_SEPARATOR, $projects.$domain.DIRECTORY_SEPARATOR.$web) :
+                preg_replace('@\/\/@', DIRECTORY_SEPARATOR, $projects.DIRECTORY_SEPARATOR.$domain.DIRECTORY_SEPARATOR.$web) :
                 preg_replace('@\/\/@', DIRECTORY_SEPARATOR, $projects.DIRECTORY_SEPARATOR.$domain);
 
             if(!file_exists($documentRoot)) {
@@ -99,8 +105,9 @@ class HttpHost extends Command
 
             /* Get certificates parameters if ssl option is set. */
             if($ssl) {
-                $certRoot = $this->askCheckSaveDir($input, $output, "What's your certificates root in all pem files.", 'certRoot');
+                $certRoot = $this->askCheckSave($input, $output, "What's your certificates root in all pem files.", 'certRoot');
                 $certRoot = str_replace('*', $domain, $certRoot);
+                $certRoot = $this->validateDirectoryPath($certRoot);
 
                 $qLetsEncrypt = new ConfirmationQuestion("Use letsencrypt filenames? y/N", false, '/^y|Y|t|T/i');
                 $letsencrypt = $questioner->ask($input, $output, $qLetsEncrypt);
@@ -186,21 +193,14 @@ class HttpHost extends Command
     }
 
     /**
-     * Ask question for parameter by name. If parameter not exist in parameters.yml
-     * ask for save.
+     * Return path with DIRECTORY_SEPARATOR at end.
      *
-     * Return string as directory path. (with DIRECTORY_SEPARATOR on end)
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @param $question
-     * @param $name
-     * @return mixed|string
+     * @param string $path
+     * @return string
      */
-    private function askCheckSaveDir(InputInterface $input, OutputInterface $output, $question, $name)
+    private function validateDirectoryPath($path)
     {
-        $param = $this->askCheckSave($input, $output, $question, $name);
-        if(substr($param, strlen($param)-1, strlen($param)-1) != DIRECTORY_SEPARATOR) $param = $param.DIRECTORY_SEPARATOR;
-        return str_replace(DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $param);
+        if(substr($path, strlen($path)-1, strlen($path)-1) != DIRECTORY_SEPARATOR) $path = $path.DIRECTORY_SEPARATOR;
+        return str_replace(DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $path);
     }
 }
