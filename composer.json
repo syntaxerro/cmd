@@ -1,0 +1,11 @@
+{
+    "require": {
+        "symfony/console": "^3.0",
+        "symfony/yaml": "^3.0",
+        "react/react": "^0.4.2",
+        "twig/twig": "~1.0"
+    },
+    "autoload": {
+        "psr-4": {"": "src/"}
+    }
+}

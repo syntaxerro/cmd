@@ -1,0 +1,5 @@
+/vendor
+/cache/*
+!/cache/.gitkeep
+/.idea
+/src/SyntaxErro/Resources/config/parameters.yml
