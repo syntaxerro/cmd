@@ -20,8 +20,16 @@ class HttpHost extends Command
     use ErrorTrait;
     use TwigTrait;
 
+    /**
+     * Instance of SyntaxErro\Model\Parameters for manipulate parameters.yml
+     *
+     * @var Parameters
+     */
     private $parameters;
 
+    /**
+     * Auto-saving parameters.yml on set every key.
+     */
     const autoSave = true;
 
     /**
@@ -105,7 +113,7 @@ class HttpHost extends Command
 
             /* Get certificates parameters if ssl option is set. */
             if($ssl) {
-                $certRoot = $this->askCheckSave($input, $output, "What's your certificates root in all pem files.", 'certRoot');
+                $certRoot = $this->askCheckSave($input, $output, "What's your certificates root with all pem files.", 'certRoot');
                 $certRoot = str_replace('*', $domain, $certRoot);
                 $certRoot = $this->validateDirectoryPath($certRoot);
 

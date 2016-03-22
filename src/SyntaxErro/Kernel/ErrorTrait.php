@@ -30,7 +30,7 @@ trait ErrorTrait
         $errors[] = null;
         $errors[] = $e->getMessage();
         while($prevException = $e->getPrevious()) {
-            $errors[] =$prevException->getMessage();
+            $errors[] = $prevException->getMessage();
             $e = $prevException;
         }
 

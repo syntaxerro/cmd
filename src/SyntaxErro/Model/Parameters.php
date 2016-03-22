@@ -79,7 +79,7 @@ class Parameters
         $this->content[$key] = $value;
         if($autoSave) {
             $dumper = new Dumper();
-            if(file_exists(static::yamlPath) && !is_writable(static::yamlPath)) throw new CannotWriteException(sprintf("Cannto write to '%s' file.", static::yamlPath));
+            if(file_exists(static::yamlPath) && !is_writable(static::yamlPath)) throw new CannotWriteException(sprintf("Cannot write to '%s' file.", static::yamlPath));
             file_put_contents(static::yamlPath, $dumper->dump($this->content, 1));
         }
         return $this;
