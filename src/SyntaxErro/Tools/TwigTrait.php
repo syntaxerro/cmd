@@ -1,6 +1,6 @@
 <?php
 
-namespace SyntaxErro\Kernel;
+namespace SyntaxErro\Tools;
 
 /**
  * Trait TwigTrait

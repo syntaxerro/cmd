@@ -1,6 +1,6 @@
 <?php
 
-namespace SyntaxErro\Kernel;
+namespace SyntaxErro;
 
 use SyntaxErro\Exception\FileNotFoundException;
 use SyntaxErro\Exception\FileNotReadableException;
@@ -39,7 +39,7 @@ class Kernel
      */
     public function loadCommands()
     {
-        foreach(new \DirectoryIterator(__DIR__.DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."Command") as $command) {
+        foreach(new \DirectoryIterator(__DIR__ . DIRECTORY_SEPARATOR .DIRECTORY_SEPARATOR."Command") as $command) {
             if(!$command->isFile() || $command->isDot()) continue;
             $command = 'SyntaxErro\Command\\'.str_replace('.php', '', $command->getFilename());
             $this->app->add($this->validateCommandClass($command));

@@ -8,11 +8,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use SyntaxErro\Exception\FileNotReadableException;
-use SyntaxErro\Kernel\ErrorTrait;
 
 class RotateCat extends Command
 {
-    use ErrorTrait;
 
     /**
      * @var array
@@ -55,6 +53,7 @@ class RotateCat extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+
         $dir = $input->getArgument('dir');
         $pattern = '/'.$input->getArgument('pattern').'/';
         $limit = $input->getOption('limit');

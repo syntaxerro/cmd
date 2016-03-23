@@ -11,13 +11,11 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use SyntaxErro\Exception\CannotWriteException;
 use SyntaxErro\Exception\FileNotFoundException;
-use SyntaxErro\Kernel\ErrorTrait;
-use SyntaxErro\Kernel\TwigTrait;
+use SyntaxErro\Tools\TwigTrait;
 use SyntaxErro\Model\Parameters;
 
 class HttpAdd extends Command
 {
-    use ErrorTrait;
     use TwigTrait;
 
     /**
@@ -73,102 +71,102 @@ class HttpAdd extends Command
     /**
      * @param InputInterface $input
      * @param OutputInterface $output
-     * @return null|int null or 0 if everything went fine, or an error code
+     * @return int|null null or 0 if everything went fine, or an error code
+     *
+     * @throws CannotWriteException
+     * @throws FileNotFoundException
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        try {
-            $questioner = $this->getHelper('question');
-            /* Get parameters from user. */
-            $domain = $input->getArgument('domain');
-            $ssl = $input->getOption('ssl');
-            $nginx = $input->getOption('nginx');
-            $projects = $this->askCheckSave($input, $output, "What's path to directory with your all projects?", 'projects');
-            $vhosts = $this->askCheckSave($input, $output, "What's path to directory with your all virtual hosts?", 'vhosts');
-            $web = $this->askCheckSave($input, $output, "What's your web directory? Type '0' for DocumentRoot.", 'webDirectory');
-            $email = $this->askCheckSave($input, $output, "What's your email?", 'adminEmail');
 
-            /* Validate paths to projects and vhosts. */
-            $projects = $this->validateDirectoryPath($projects);
-            $vhosts = $this->validateDirectoryPath($vhosts);
+        $questioner = $this->getHelper('question');
+        /* Get parameters from user. */
+        $domain = $input->getArgument('domain');
+        $ssl = $input->getOption('ssl');
+        $nginx = $input->getOption('nginx');
+        $projects = $this->askCheckSave($input, $output, "What's path to directory with your all projects?", 'projects');
+        $vhosts = $this->askCheckSave($input, $output, "What's path to directory with your all virtual hosts?", 'vhosts');
+        $web = $this->askCheckSave($input, $output, "What's your web directory? Type '0' for DocumentRoot.", 'webDirectory');
+        $email = $this->askCheckSave($input, $output, "What's your email?", 'adminEmail');
 
-            /* Validate parameters from user for new vhost creating. */
-            if(!is_writable($vhosts)) throw new CannotWriteException(sprintf("Cannot write to '%s' directory.", $vhosts));
-            if(file_exists($vhosts.$domain.".conf")) {
-                $continueQuestion = new ConfirmationQuestion("VirtualHost exist. Do you want override? y/N", false, '/^y|Y|t|T/i');
-                if(!$questioner->ask($input, $output, $continueQuestion)) {
-                    $output->writeln("<error>Aborted by user.</error>");
-                    return 385;
-                }
-            }
+        /* Validate paths to projects and vhosts. */
+        $projects = $this->validateDirectoryPath($projects);
+        $vhosts = $this->validateDirectoryPath($vhosts);
 
-            /* Create DocumentRoot path. */
-            $documentRoot = $web ?
-                str_replace(DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $projects.DIRECTORY_SEPARATOR.$domain.DIRECTORY_SEPARATOR.$web) :
-                str_replace(DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $projects.DIRECTORY_SEPARATOR.$domain);
-
-            if(!file_exists($documentRoot)) {
-                throw new FileNotFoundException(sprintf("Not found '%s' directory. Cannot create vhost for this DocumentRoot.", $projects.$domain));
-            }
-
-            /* Get certificates parameters if ssl option is set. */
-            if($ssl) {
-                $certRoot = $this->askCheckSave($input, $output, "What's your certificates root with all pem files.", 'certRoot');
-                $certRoot = str_replace('*', $domain, $certRoot);
-                $certRoot = $this->validateDirectoryPath($certRoot);
-
-                $qLetsEncrypt = new ConfirmationQuestion("Use letsencrypt filenames? y/N", false, '/^y|Y|t|T/i');
-                $letsencrypt = $questioner->ask($input, $output, $qLetsEncrypt);
-
-                if($letsencrypt) {
-                    $cert = $nginx ? "fullchain.pem" : "cert.pem";
-                    $key = "privkey.pem";
-                    if(!$nginx) $chain = "chain.pem";
-                } else {
-                    $qCert = new Question("What's filename of ".($nginx ? "fullchain" : "cert")." file? ");
-                    $qKey = new Question("What's filename of private key file? ");
-                    $cert = $questioner->ask($input, $output, $qCert);
-                    $key = $questioner->ask($input, $output, $qKey);
-                    if(!$nginx) {
-                        $qChain = new Question("What's filename of chain file?");
-                        $chain = $questioner->ask($input, $output, $qChain);
-                    }
-                }
-            }
-
-            /* Add server aliases. */
-            $aliases = [];
-            $aliasQuestion = new Question("Add server aliases. <info>[Press enter/return for finish]</info> ");
-            while($alias = $questioner->ask($input, $output, $aliasQuestion)) {
-                if(!strlen($alias)) break;
-                $aliases[] = $alias;
-            }
-
-            /* Initialize twig and render configuration from template. */
-            $this->initTwig();
-            $configurationContent = $this->render($nginx ? 'nginx-vhost.twig' : 'apache-vhost.twig', [
-                'ServerName' => $domain,
-                'ServerAdmin' => $email,
-                'DocumentRoot' => $documentRoot,
-                'ServerAlias' => $aliases,
-                'SSLCertificateFile' => isset($certRoot) && isset($cert) ? $certRoot.$cert : false,
-                'SSLCertificateKeyFile' => isset($certRoot) && isset($key) ? $certRoot.$key : false,
-                'SSLCertificateChainFile' => isset($certRoot) && isset($chain) ? $certRoot.$chain : false
-            ]);
-
-            /* Confirm and save or abort. */
-            $output->writeln($configurationContent);
-            $continueQuestion = new ConfirmationQuestion("<info>VirtualHost created. Accept and save?</info> Y/n", true, '/^y|Y|t|T/i');
-            if($this->getHelper('question')->ask($input, $output, $continueQuestion)) {
-                file_put_contents($vhosts.$domain.".conf", $configurationContent);
-                $output->writeln("VirtualHost saved. Remember enable it running: <info>sudo a2ensite $domain && sudo service apache2 reload</info>");
-            } else {
+        /* Validate parameters from user for new vhost creating. */
+        if(!is_writable($vhosts)) throw new CannotWriteException(sprintf("Cannot write to '%s' directory.", $vhosts));
+        if(file_exists($vhosts.$domain.".conf")) {
+            $continueQuestion = new ConfirmationQuestion("VirtualHost exist. Do you want override? y/N", false, '/^y|Y|t|T/i');
+            if(!$questioner->ask($input, $output, $continueQuestion)) {
                 $output->writeln("<error>Aborted by user.</error>");
+                return 385;
             }
-
-        } catch(\Exception $e) {
-            $this->displayError($e, $output, $this->getHelper('formatter'));
         }
+
+        /* Create DocumentRoot path. */
+        $documentRoot = $web ?
+            str_replace(DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $projects.DIRECTORY_SEPARATOR.$domain.DIRECTORY_SEPARATOR.$web) :
+            str_replace(DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $projects.DIRECTORY_SEPARATOR.$domain);
+
+        if(!file_exists($documentRoot)) {
+            throw new FileNotFoundException(sprintf("Not found '%s' directory. Cannot create vhost for this DocumentRoot.", $projects.$domain));
+        }
+
+        /* Get certificates parameters if ssl option is set. */
+        if($ssl) {
+            $certRoot = $this->askCheckSave($input, $output, "What's your certificates root with all pem files.", 'certRoot');
+            $certRoot = str_replace('*', $domain, $certRoot);
+            $certRoot = $this->validateDirectoryPath($certRoot);
+
+            $qLetsEncrypt = new ConfirmationQuestion("Use letsencrypt filenames? y/N", false, '/^y|Y|t|T/i');
+            $letsencrypt = $questioner->ask($input, $output, $qLetsEncrypt);
+
+            if($letsencrypt) {
+                $cert = $nginx ? "fullchain.pem" : "cert.pem";
+                $key = "privkey.pem";
+                if(!$nginx) $chain = "chain.pem";
+            } else {
+                $qCert = new Question("What's filename of ".($nginx ? "fullchain" : "cert")." file? ");
+                $qKey = new Question("What's filename of private key file? ");
+                $cert = $questioner->ask($input, $output, $qCert);
+                $key = $questioner->ask($input, $output, $qKey);
+                if(!$nginx) {
+                    $qChain = new Question("What's filename of chain file?");
+                    $chain = $questioner->ask($input, $output, $qChain);
+                }
+            }
+        }
+
+        /* Add server aliases. */
+        $aliases = [];
+        $aliasQuestion = new Question("Add server aliases. WWW prefix will be auto added. <info>[Press enter/return for finish]</info> ");
+        while($alias = $questioner->ask($input, $output, $aliasQuestion)) {
+            if(!strlen($alias)) break;
+            $aliases[] = $alias;
+        }
+
+        /* Initialize twig and render configuration from template. */
+        $this->initTwig();
+        $configurationContent = $this->render($nginx ? 'nginx-vhost.twig' : 'apache-vhost.twig', [
+            'ServerName' => $domain,
+            'ServerAdmin' => $email,
+            'DocumentRoot' => $documentRoot,
+            'ServerAlias' => $aliases,
+            'SSLCertificateFile' => isset($certRoot) && isset($cert) ? $certRoot.$cert : false,
+            'SSLCertificateKeyFile' => isset($certRoot) && isset($key) ? $certRoot.$key : false,
+            'SSLCertificateChainFile' => isset($certRoot) && isset($chain) ? $certRoot.$chain : false
+        ]);
+
+        /* Confirm and save or abort. */
+        $output->writeln($configurationContent);
+        $continueQuestion = new ConfirmationQuestion("<info>VirtualHost created. Accept and save?</info> Y/n", true, '/^y|Y|t|T/i');
+        if($this->getHelper('question')->ask($input, $output, $continueQuestion)) {
+            file_put_contents($vhosts.$domain.".conf", $configurationContent);
+            $output->writeln("VirtualHost saved. Remember enable it running: <info>sudo a2ensite $domain && sudo service apache2 reload</info>");
+        } else {
+            $output->writeln("<error>Aborted by user.</error>");
+        }
+
         return 0;
     }
 

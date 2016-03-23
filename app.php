@@ -3,5 +3,5 @@
 /** @noinspection PhpIncludeInspection */
 require __DIR__.DIRECTORY_SEPARATOR.'vendor'.DIRECTORY_SEPARATOR.'autoload.php';
 
-$kernel = new \SyntaxErro\Kernel\Kernel();
+$kernel = new \SyntaxErro\Kernel();
 $kernel->loadCommands()->run();
