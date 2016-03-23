@@ -25,7 +25,7 @@ class Kernel
      */
     public function __construct()
     {
-        $this->app = new Application("Syntaxerro CMD Tools", "0.0.4 alpha");
+        $this->app = new Application("Syntaxerro CMD Tools", "0.0.5 alpha");
     }
 
     /**
@@ -39,7 +39,7 @@ class Kernel
      */
     public function loadCommands()
     {
-        foreach(new \DirectoryIterator(__DIR__ . DIRECTORY_SEPARATOR .DIRECTORY_SEPARATOR."Command") as $command) {
+        foreach(new \DirectoryIterator(__DIR__ .DIRECTORY_SEPARATOR."Command") as $command) {
             if(!$command->isFile() || $command->isDot()) continue;
             $command = 'SyntaxErro\Command\\'.str_replace('.php', '', $command->getFilename());
             $this->app->add($this->validateCommandClass($command));
