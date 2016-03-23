@@ -11,34 +11,13 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use SyntaxErro\Exception\CannotWriteException;
 use SyntaxErro\Exception\FileNotFoundException;
-use SyntaxErro\Tools\TwigTrait;
-use SyntaxErro\Model\Parameters;
+use SyntaxErro\Tools\AnswerStorage;
+use SyntaxErro\Tools\Twig;
 
 class HttpAdd extends Command
 {
-    use TwigTrait;
-
-    /**
-     * Instance of SyntaxErro\Model\Parameters for manipulate parameters.yml
-     *
-     * @var Parameters
-     */
-    private $parameters;
-
-    /**
-     * Auto-saving parameters.yml on set every key.
-     */
-    const autoSave = true;
-
-    /**
-     * HttpHost constructor.
-     * @param null $name
-     */
-    public function __construct($name = null)
-    {
-        parent::__construct($name);
-        $this->parameters = new Parameters();
-    }
+    use Twig;
+    use AnswerStorage;
 
     /**
      * Configure h:h command.
@@ -84,10 +63,10 @@ class HttpAdd extends Command
         $domain = $input->getArgument('domain');
         $ssl = $input->getOption('ssl');
         $nginx = $input->getOption('nginx');
-        $projects = $this->askCheckSave($input, $output, "What's path to directory with your all projects?", 'projects');
-        $vhosts = $this->askCheckSave($input, $output, "What's path to directory with your all virtual hosts?", 'vhosts');
-        $web = $this->askCheckSave($input, $output, "What's your web directory? Type '0' for DocumentRoot.", 'webDirectory');
-        $email = $this->askCheckSave($input, $output, "What's your email?", 'adminEmail');
+        $projects = $this->ask($input, $output, "What's path to directory with your all projects?", 'projects');
+        $vhosts = $this->ask($input, $output, "What's path to directory with your all virtual hosts?", 'vhosts');
+        $web = $this->ask($input, $output, "What's your web directory? Type '0' for DocumentRoot.", 'webDirectory');
+        $email = $this->ask($input, $output, "What's your email?", 'adminEmail');
 
         /* Validate paths to projects and vhosts. */
         $projects = $this->validateDirectoryPath($projects);
@@ -114,7 +93,7 @@ class HttpAdd extends Command
 
         /* Get certificates parameters if ssl option is set. */
         if($ssl) {
-            $certRoot = $this->askCheckSave($input, $output, "What's your certificates root with all pem files.", 'certRoot');
+            $certRoot = $this->ask($input, $output, "What's your certificates root with all pem files.", 'certRoot');
             $certRoot = str_replace('*', $domain, $certRoot);
             $certRoot = $this->validateDirectoryPath($certRoot);
 
@@ -160,7 +139,7 @@ class HttpAdd extends Command
         /* Confirm and save or abort. */
         $output->writeln($configurationContent);
         $continueQuestion = new ConfirmationQuestion("<info>VirtualHost created. Accept and save?</info> Y/n", true, '/^y|Y|t|T/i');
-        if($this->getHelper('question')->ask($input, $output, $continueQuestion)) {
+        if($questioner->ask($input, $output, $continueQuestion)) {
             file_put_contents($vhosts.$domain.".conf", $configurationContent);
             $output->writeln("VirtualHost saved. Remember enable it running: <info>sudo a2ensite $domain && sudo service apache2 reload</info>");
         } else {
@@ -168,34 +147,6 @@ class HttpAdd extends Command
         }
 
         return 0;
-    }
-
-    /**
-     * Ask question for parameter by name. If parameter not exist in parameters.yml
-     * ask for save.
-     *
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @param $question
-     * @param $name
-     * @return mixed
-     * @throws \SyntaxErro\Exception\InvalidConfigException
-     */
-    private function askCheckSave(InputInterface $input, OutputInterface $output, $question, $name)
-    {
-        $questioner = $this->getHelper('question');
-        if($this->parameters->has($name)) {
-            $question = new Question("$question <info>[{$this->parameters->get($name)}]</info>", $this->parameters->get($name));
-        } else {
-            $question = new Question($question." ");
-            $saveQuestion = new ConfirmationQuestion("Save for future? Y/n", true, '/^y|Y|t|T/i');
-        }
-        $qResponse = trim($questioner->ask($input, $output, $question));
-        if(!is_string($qResponse) || !strlen($qResponse)) $this->askCheckSave($input, $output, $question->getQuestion(), $name);
-        if(isset($saveQuestion) && $questioner->ask($input, $output, $saveQuestion)) {
-            $this->parameters->set($name, $qResponse, static::autoSave);
-        }
-        return $qResponse;
     }
 
     /**

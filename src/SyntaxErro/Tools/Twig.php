@@ -8,7 +8,7 @@ namespace SyntaxErro\Tools;
  * Use this trait for rendering from templates.
  * @package SyntaxErro\Kernel
  */
-trait TwigTrait
+trait Twig
 {
     /**
      * @var \Twig_Environment|null
