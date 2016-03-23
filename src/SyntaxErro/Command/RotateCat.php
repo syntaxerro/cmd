@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use SyntaxErro\Exception\FileNotReadableException;
 use SyntaxErro\Kernel\ErrorTrait;
 
-class RecursiveCat extends Command
+class RotateCat extends Command
 {
     use ErrorTrait;
 
@@ -26,7 +26,7 @@ class RecursiveCat extends Command
     protected function configure()
     {
         $this
-            ->setName('recursive:cat')
+            ->setName('rotate:cat')
             ->setDescription('Cat all rotated logs.')
             ->addArgument(
                 'dir',
