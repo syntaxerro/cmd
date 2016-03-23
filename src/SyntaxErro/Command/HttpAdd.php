@@ -104,8 +104,8 @@ class HttpAdd extends Command
 
             /* Create DocumentRoot path. */
             $documentRoot = $web ?
-                preg_replace('@\/\/@', DIRECTORY_SEPARATOR, $projects.DIRECTORY_SEPARATOR.$domain.DIRECTORY_SEPARATOR.$web) :
-                preg_replace('@\/\/@', DIRECTORY_SEPARATOR, $projects.DIRECTORY_SEPARATOR.$domain);
+                str_replace(DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $projects.DIRECTORY_SEPARATOR.$domain.DIRECTORY_SEPARATOR.$web) :
+                str_replace(DIRECTORY_SEPARATOR.DIRECTORY_SEPARATOR, DIRECTORY_SEPARATOR, $projects.DIRECTORY_SEPARATOR.$domain);
 
             if(!file_exists($documentRoot)) {
                 throw new FileNotFoundException(sprintf("Not found '%s' directory. Cannot create vhost for this DocumentRoot.", $projects.$domain));
