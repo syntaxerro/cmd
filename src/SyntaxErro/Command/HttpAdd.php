@@ -65,8 +65,8 @@ class HttpAdd extends Command
         $nginx = $input->getOption('nginx');
         $projects = $this->ask($input, $output, "What's path to directory with your all projects?", 'projects');
         $vhosts = $this->ask($input, $output, "What's path to directory with your all virtual hosts?", 'vhosts');
-        $web = $this->ask($input, $output, "What's your web directory? Type '0' for DocumentRoot.", 'webDirectory');
-        $email = $this->ask($input, $output, "What's your email?", 'adminEmail');
+        $web = $this->ask($input, $output, "What's your web directory? Type '0' for DocumentRoot.", 'web_directory');
+        $email = $this->ask($input, $output, "What's your email?", 'admin_email');
 
         /* Validate paths to projects and vhosts. */
         $projects = $this->validateDirectoryPath($projects);
