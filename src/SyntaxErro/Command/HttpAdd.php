@@ -15,7 +15,7 @@ use SyntaxErro\Kernel\ErrorTrait;
 use SyntaxErro\Kernel\TwigTrait;
 use SyntaxErro\Model\Parameters;
 
-class HttpHost extends Command
+class HttpAdd extends Command
 {
     use ErrorTrait;
     use TwigTrait;
@@ -49,7 +49,7 @@ class HttpHost extends Command
     protected function configure()
     {
         $this
-            ->setName('http:host')
+            ->setName('http:add')
             ->setDescription('Create new apache2.4 org nginx vhost.')
             ->addArgument(
                 'domain',
