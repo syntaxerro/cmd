@@ -12,7 +12,7 @@ all_domains: "SELECT id, name FROM virtual_domains"
 
 # *** Checking user exist ***
 #
-# Parameter: domain name, eg. example.com
+# Parameter: email, eg. user@example.com
 user_exist: "SELECT 1 FROM virtual_users WHERE email='%s'"
 
 # *** Adding new user. ***
