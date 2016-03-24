@@ -2,17 +2,17 @@
 Command line administrator tools written in PHP.
 
 ### Features:
-- Create vhost for apache configuration from template.
+- Create apache vhost configuration from template [SyntaxErro/Resources/tpl/apache-vhost.twig](https://github.com/syntaxerro/cmd/blob/master/src/SyntaxErro/Resources/tpl/apache-vhost.twig).
 ```
 ./app.php http:add example.com
 ```
 
-- Configuration format for nginx.
+- Configuration format for nginx [SyntaxErro/Resources/tpl/nginx-vhost.twig](https://github.com/syntaxerro/cmd/blob/master/src/SyntaxErro/Resources/tpl/nginx-vhost.twig).
 ```
 ./app.php http:add example.com --nginx
 ```
 
-- Create vhost with SSL support and auto redirection.
+- Create vhost with SSL support and auto redirection for not supported SNI certificates.
 ```
 ./app.php http:add example.com --ssl
 ```
@@ -21,3 +21,20 @@ Command line administrator tools written in PHP.
 ```
 ./app.php rotate:cat /var/log/nginx example.com
 ```
+
+- Adding domains to postfix + dovecot database.
+```
+./app.php smtp:add domain
+```
+
+- Adding users to postfix + dovecot database.
+```
+./app.php smtp:add user
+```
+
+- Adding aliases to postfix + dovecot database.
+```
+./app.php smtp:add alias
+```
+
+- [Custom queries](https://github.com/syntaxerro/cmd/blob/master/src/SyntaxErro/Resources/config/queries.yml) to postfix and dovecot database.

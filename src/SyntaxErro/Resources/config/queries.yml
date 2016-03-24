@@ -1,0 +1,33 @@
+# *** Adding new domain. ***
+#
+# Parameter: domain name, eg. "example.com"
+new_domain: "INSERT INTO virtual_domains SET name='%s'"
+
+# *** List all domains. ***
+#
+# Required 'id' and 'name' keys.
+# Use aliases if your database is different, eg.
+#   SELECT domain_id AS id, domain_name AS name FROM custom_domains_table
+all_domains: "SELECT id, name FROM virtual_domains"
+
+# *** Checking user exist ***
+#
+# Parameter: domain name, eg. example.com
+user_exist: "SELECT 1 FROM virtual_users WHERE email='%s'"
+
+# *** Adding new user. ***
+#
+# Parameters: firstly domain_id, next email and last is password.
+new_user: "INSERT INTO virtual_users SET domain_id = '%s', email='%s', password = ENCRYPT('%s', CONCAT('$6$', SUBSTRING(SHA(RAND()), -16)))"
+
+# *** List all users. ***
+#
+# Required 'id', 'domain_id' and 'email' keys.
+# Use aliases if your database id different, eg.
+#   SELECT user_id AS id, domain AS domain_id, user_email AS email FROM custom_users_table
+all_users: "SELECT id, domain_id, email FROM virtual_users"
+
+# *** Adding new alias. ***
+#
+# Parameters: firstly domain_id, next new alias and last is destination user.
+new_alias: "INSERT INTO virtual_aliases SET domain_id = '%s', source = '%s', destination = '%s'"

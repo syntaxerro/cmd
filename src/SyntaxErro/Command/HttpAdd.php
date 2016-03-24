@@ -93,7 +93,7 @@ class HttpAdd extends Command
 
         /* Get certificates parameters if ssl option is set. */
         if($ssl) {
-            $certRoot = $this->ask($input, $output, "What's your certificates root with all pem files.", 'certRoot');
+            $certRoot = $this->ask($input, $output, "What's your certificates root with all pem files.", 'cert_root');
             $certRoot = str_replace('*', $domain, $certRoot);
             $certRoot = $this->validateDirectoryPath($certRoot);
 
