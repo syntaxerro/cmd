@@ -37,4 +37,10 @@ Command line administrator tools written in PHP.
 ./app.php smtp:add alias
 ```
 
-- [Custom queries](https://github.com/syntaxerro/cmd/blob/master/src/SyntaxErro/Resources/config/queries.yml) to postfix and dovecot database.
+- Custom queries to postfix and dovecot database [SyntaxErro/Resources/config/queries.yml](https://github.com/syntaxerro/cmd/blob/master/src/SyntaxErro/Resources/config/queries.yml).
+```yml
+# *** Adding new domain. ***
+#
+# Parameter: domain name, eg. "example.com"
+new_domain: "INSERT INTO virtual_domains SET name='%s'"
+```

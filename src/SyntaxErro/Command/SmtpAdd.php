@@ -135,7 +135,9 @@ class SmtpAdd extends Command
                 $output->writeln("<info>SUCCESS: Added new user $email.</info>");
                 break;
 
+            /* Adding new alias. */
             case 'alias':
+                /* List and select destination user. */
                 $users = $pdo->query($queries['all_users'])->fetchAll();
                 $exists = [];
                 foreach($users as $user) {
@@ -153,6 +155,7 @@ class SmtpAdd extends Command
                     }
                 }
 
+                /* Ask and save new alias for selected user. */
                 $aliasQuestion = new Question("New alias for ".$selectedUserArray['email']." (only username without domain): ");
                 $alias = $questioner->ask($input, $output, $aliasQuestion);
 
