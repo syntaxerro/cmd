@@ -43,7 +43,7 @@ class SmtpRemove extends Command
     }
 
     /**
-     * Execute smtp:add command.
+     * Execute smtp:rm command.
      *
      * @param InputInterface $input
      * @param OutputInterface $output
