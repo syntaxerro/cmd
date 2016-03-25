@@ -21,6 +21,11 @@ sudo curl -k https://cdn.rawgit.com/syntaxerro/cmd/master/bash/install.sh | bash
 ./app.php http:add example.com --nginx
 ```
 
+- Custom configuration templates [SyntaxErro/Resources/tpl](https://github.com/syntaxerro/cmd/blob/master/src/SyntaxErro/Resources/tpl).
+```
+./app.php http:add example.com --template "custom-template-name.twig"
+```
+
 - Create vhost with SSL support and auto redirection for not supported SNI certificates.
 ```
 ./app.php http:add example.com --ssl
