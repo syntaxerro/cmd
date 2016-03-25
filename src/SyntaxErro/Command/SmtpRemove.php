@@ -55,7 +55,7 @@ class SmtpRemove extends Command
     {
         $queries = $this->loadCustomQueries();
         $questioner = $this->getHelper('question');
-        /* Get and validate type of adding data. */
+        /* Get and validate type of data. */
         $type = strtolower($input->getArgument('type'));
         $allowedTypes = ["domain", "user", "alias"];
         if(!in_array($type, $allowedTypes)) throw new \UnexpectedValueException(sprintf("Type '%s' is not allowed. Choice domain, user or alias.", $type));

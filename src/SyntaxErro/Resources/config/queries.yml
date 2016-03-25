@@ -40,6 +40,11 @@ remove_user: "DELETE FROM virtual_users WHERE id='%s'"
 # Parameter: email, eg. user@example.com
 user_exist: "SELECT 1 FROM virtual_users WHERE email='%s'"
 
+# *** Change user password. ***
+#
+# Parameters: firstly plain text new password from console, next user email
+update_password: "UPDATE virtual_users SET password = ENCRYPT('%s', CONCAT('$6$', SUBSTRING(SHA(RAND()), -16))) WHERE email = '%s'"
+
 
 # ---------------------------- ALIASES ----------------------------
 # *** Adding new alias. ***

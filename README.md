@@ -32,6 +32,11 @@ Command line administrator tools written in PHP.
 ./app.php smtp:rm [alias|user|domain]
 ```
 
+- Change passwords of users in postfix + dovecot database.
+```
+./app.php smtp:pass user@example.com
+```
+
 - Custom queries to postfix and dovecot database [SyntaxErro/Resources/config/queries.yml](https://github.com/syntaxerro/cmd/blob/master/src/SyntaxErro/Resources/config/queries.yml).
 ```yml
 # *** Adding new domain. ***
