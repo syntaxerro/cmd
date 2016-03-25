@@ -1,26 +1,26 @@
 #!/usr/bin/env bash
 if [[ ! -n "$1" ]] ; then
-    echo "ERROR: I need domain or directory name in /var/www.";
+    echo "ERROR: I need path to project root.";
     exit;
 fi
 
 HTTPDUSER=`ps axo user,comm | grep -E '[a]pache|[h]ttpd|[_]www|[w]ww-data|[n]ginx' | grep -v root | head -1 | cut -d\  -f1`
 EXIST="NO";
 
-if [ -d "/var/www/$1/app/cache" ]; then
-  CACHE_PATH="/var/www/$1/app/cache";
-  LOGS_PATH="/var/www/$1/app/logs";
+if [ -d "$1/app/cache" ]; then
+  CACHE_PATH="$1/app/cache";
+  LOGS_PATH="$1/app/logs";
   EXIST="YES";
 fi
 
-if [ -d "/var/www/$1/var/cache" ]; then
-  CACHE_PATH="/var/www/$1/var/cache";
-  LOGS_PATH="/var/www/$1/var/logs";
+if [ -d "$1/var/cache" ]; then
+  CACHE_PATH="$1/var/cache";
+  LOGS_PATH="$1/var/logs";
   EXIST="YES";
 fi
 
 if [[ "$EXIST" = "NO" ]]; then
-  echo "ERROR: Project in '/var/www/$1' must be an symfony app.";
+  echo "ERROR: Project in '$1' must be an symfony app.";
   exit;
 fi
 
