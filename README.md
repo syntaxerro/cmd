@@ -4,10 +4,10 @@ Command line administrator tools written in PHP.
 ### Installation:
 - Require git and composer for installation.
 - Require PHP >=5.5 for execute.
-- Optional create link in `/usr/local/bin` with custom command name.
+- Create symlink as `/usr/local/bin/manager`.
 - Copy and paste this command.
 ```bash
-curl -k https://cdn.rawgit.com/syntaxerro/cmd/master/bash/install.sh | bash
+sudo curl -k https://cdn.rawgit.com/syntaxerro/cmd/master/bash/install.sh | bash
 ```
 
 ### Features:
