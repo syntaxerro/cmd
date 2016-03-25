@@ -44,6 +44,12 @@ class HttpAdd extends Command
                 'x',
                 InputOption::VALUE_NONE,
                 'Use nginx config output format.'
+            )
+            ->addOption(
+                'template',
+                'tpl',
+                InputOption::VALUE_REQUIRED,
+                'Filename of custom template. Templates root is in SyntaxErro/Resources/tpl.'
             );
     }
 
@@ -63,6 +69,7 @@ class HttpAdd extends Command
         $domain = $input->getArgument('domain');
         $ssl = $input->getOption('ssl');
         $nginx = $input->getOption('nginx');
+        $template = $input->getOption('template');
         $projects = $this->ask($input, $output, "What's path to directory with your all projects?", 'projects');
         $vhosts = $this->ask($input, $output, "What's path to directory with your all virtual hosts?", 'vhosts');
         $web = $this->ask($input, $output, "What's your web directory? Type '0' for DocumentRoot.", 'web_directory');
@@ -126,7 +133,9 @@ class HttpAdd extends Command
 
         /* Initialize twig and render configuration from template. */
         $this->initTwig();
-        $configurationContent = $this->render($nginx ? 'nginx-vhost.twig' : 'apache-vhost.twig', [
+        $tplPath = $nginx ? 'nginx-vhost.twig' : 'apache-vhost.twig';
+        if($template) $tplPath = $template;
+        $configurationContent = $this->render($tplPath, [
             'ServerName' => $domain,
             'ServerAdmin' => $email,
             'DocumentRoot' => $documentRoot,
