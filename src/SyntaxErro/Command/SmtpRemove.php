@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Yaml\Parser;
+use SyntaxErro\Model\CustomQueries;
 use SyntaxErro\Exception\FileNotReadableException;
 use SyntaxErro\Tools\AnswerStorage;
 
@@ -29,20 +29,6 @@ class SmtpRemove extends Command
     }
 
     /**
-     * Load queries from SyntaxErro\Resources\config\queries.yml
-     *
-     * @return mixed
-     * @throws FileNotReadableException
-     */
-    private function loadCustomQueries()
-    {
-        $queriesFile = __DIR__.DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."Resources".DIRECTORY_SEPARATOR."config".DIRECTORY_SEPARATOR."queries.yml";
-        if(!is_readable($queriesFile)) throw new FileNotReadableException(sprintf("Cannot read '%s' file for read queries.", $queriesFile));
-        $parser = new Parser();
-        return $parser->parse(file_get_contents($queriesFile));
-    }
-
-    /**
      * Execute smtp:rm command.
      *
      * @param InputInterface $input
@@ -53,7 +39,9 @@ class SmtpRemove extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $queries = $this->loadCustomQueries();
+        $queries = CustomQueries::load(
+            __DIR__.DIRECTORY_SEPARATOR."..".DIRECTORY_SEPARATOR."Resources".DIRECTORY_SEPARATOR."config".DIRECTORY_SEPARATOR."queries.yml"
+        );
         $questioner = $this->getHelper('question');
         /* Get and validate type of data. */
         $type = strtolower($input->getArgument('type'));
