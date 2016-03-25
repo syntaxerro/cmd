@@ -1,6 +1,15 @@
 # Syntaxerro CMD Tools
 Command line administrator tools written in PHP.
 
+### Installation:
+- Require git and composer for installation.
+- Require PHP >=5.5 for execute.
+- Optional create link in `/usr/local/bin` with custom command name.
+- Copy and paste this command.
+```bash
+curl -k https://cdn.rawgit.com/syntaxerro/cmd/master/bash/install.sh | bash
+```
+
 ### Features:
 - Create apache vhost configuration from template [SyntaxErro/Resources/tpl/apache-vhost.twig](https://github.com/syntaxerro/cmd/blob/master/src/SyntaxErro/Resources/tpl/apache-vhost.twig).
 ```
