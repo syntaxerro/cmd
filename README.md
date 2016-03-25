@@ -22,19 +22,14 @@ Command line administrator tools written in PHP.
 ./app.php rotate:cat /var/log/nginx example.com
 ```
 
-- Adding domains to postfix + dovecot database.
+- Adding aliases, users or domains to postfix + dovecot database.
 ```
-./app.php smtp:add domain
-```
-
-- Adding users to postfix + dovecot database.
-```
-./app.php smtp:add user
+./app.php smtp:add [alias|user|domain]
 ```
 
-- Adding aliases to postfix + dovecot database.
+- Removing aliases, users or domains to postfix + dovecot database.
 ```
-./app.php smtp:add alias
+./app.php smtp:rm [alias|user|domain]
 ```
 
 - Custom queries to postfix and dovecot database [SyntaxErro/Resources/config/queries.yml](https://github.com/syntaxerro/cmd/blob/master/src/SyntaxErro/Resources/config/queries.yml).

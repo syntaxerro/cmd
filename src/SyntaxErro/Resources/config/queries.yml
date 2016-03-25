@@ -1,3 +1,4 @@
+# ---------------------------- DOMAINS ----------------------------
 # *** Adding new domain. ***
 #
 # Parameter: domain name, eg. "example.com"
@@ -10,11 +11,13 @@ new_domain: "INSERT INTO virtual_domains SET name='%s'"
 #   SELECT domain_id AS id, domain_name AS name FROM custom_domains_table
 all_domains: "SELECT id, name FROM virtual_domains"
 
-# *** Checking user exist ***
+# *** Delete domain. ***
 #
-# Parameter: email, eg. user@example.com
-user_exist: "SELECT 1 FROM virtual_users WHERE email='%s'"
+# Parameter: domain id from database.
+remove_domain: "DELETE FROM virtual_domains WHERE id='%s'"
 
+
+# ---------------------------- USERS ----------------------------
 # *** Adding new user. ***
 #
 # Parameters: firstly domain_id, next email and last is password.
@@ -23,11 +26,35 @@ new_user: "INSERT INTO virtual_users SET domain_id = '%s', email='%s', password 
 # *** List all users. ***
 #
 # Required 'id', 'domain_id' and 'email' keys.
-# Use aliases if your database id different, eg.
+# Use aliases if your database is different, eg.
 #   SELECT user_id AS id, domain AS domain_id, user_email AS email FROM custom_users_table
 all_users: "SELECT id, domain_id, email FROM virtual_users"
 
+# *** Delete user. ***
+#
+# Parameter: user id from database.
+remove_user: "DELETE FROM virtual_users WHERE id='%s'"
+
+# *** Checking user exist ***
+#
+# Parameter: email, eg. user@example.com
+user_exist: "SELECT 1 FROM virtual_users WHERE email='%s'"
+
+
+# ---------------------------- ALIASES ----------------------------
 # *** Adding new alias. ***
 #
 # Parameters: firstly domain_id, next new alias and last is destination user.
 new_alias: "INSERT INTO virtual_aliases SET domain_id = '%s', source = '%s', destination = '%s'"
+
+# *** List all aliases. ***
+#
+# Required 'id', 'source' and 'destination' keys.
+# Use aliases if your database is different, eg.
+#   SELECT alias_id AS id, alias AS source, user AS destination FROM custom_aliases_table
+all_aliases: "SELECT id, source, destination FROM virtual_aliases"
+
+# *** Delete alias. ***
+#
+# Parameter: alias id from database.
+remove_alias: "DELETE FROM virtual_aliases WHERE id='%s'"
