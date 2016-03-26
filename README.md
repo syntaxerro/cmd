@@ -51,10 +51,21 @@ sudo curl -k https://cdn.rawgit.com/syntaxerro/cmd/master/bash/install.sh | bash
 ./app.php smtp:pass user@example.com
 ```
 
-- Custom queries to postfix and dovecot database [SyntaxErro/Resources/config/queries.yml](https://github.com/syntaxerro/cmd/blob/master/src/SyntaxErro/Resources/config/queries.yml).
+- Custom queries to postfix, dovecot and spamassassin database [SyntaxErro/Resources/config/queries.yml](https://github.com/syntaxerro/cmd/blob/master/src/SyntaxErro/Resources/config/queries.yml).
 ```yml
 # *** Adding new domain. ***
 #
 # Parameter: domain name, eg. "example.com"
 new_domain: "INSERT INTO virtual_domains SET name='%s'"
+```
+
+- Add blacklist or whitelist items to SpamAssassin user preferences database.
+```
+./app.php spam:add [black|white]
+```
+
+
+- Removing blacklist or whitelist items from SpamAssassin user preferences database.
+```
+./app.php spam:rm [black|white]
 ```

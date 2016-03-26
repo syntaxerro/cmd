@@ -63,3 +63,34 @@ all_aliases: "SELECT id, source, destination FROM virtual_aliases"
 #
 # Parameter: alias id from database.
 remove_alias: "DELETE FROM virtual_aliases WHERE id='%s'"
+
+
+# ---------------------------- SPAMASSASSIN ----------------------------
+# *** Adding to blacklist or removing from blacklist. ***
+#
+# Parameters: firstly username, next content of blacklist
+black_add: "INSERT INTO userpref SET username='%s', preference='blacklist_from', value='%s'"
+
+# Parameters: firstly adding email to blacklist, next username
+black_update_add: "UPDATE userpref SET value=CONCAT(value, ' %s') WHERE username='%s' AND preference='blacklist_from'"
+
+# Parameters: firstly removing email from blacklist, next username
+black_update_remove: "UPDATE userpref SET value=REPLACE(value, '%s', '') WHERE username='%s' AND preference='blacklist_from'"
+
+# Parameter: username
+black_exist: "SELECT 1 FROM userpref WHERE username='%s' AND preference='blacklist_from'"
+
+
+# *** Adding to whitelist or removing from whitelist. ***
+#
+# Parameters: firstly username, next content of blacklist
+white_add: "INSERT INTO userpref SET username='%s', preference='whitelist_from', value='%s'"
+
+# Parameters: firstly content of blacklist, next username
+white_update_add: "UPDATE userpref SET value=CONCAT(value, ' %s') WHERE username='%s' AND preference='whitelist_from'"
+
+# Parameters: firstly removing email from whitelist, next username
+white_update_remove: "UPDATE userpref SET value=REPLACE(value, ' %s', '') WHERE username='%s' AND preference='whitelist_from'"
+
+# Parameter: username
+white_exist: "SELECT 1 FROM userpref WHERE username='%s' AND preference='whitelist_from'"
