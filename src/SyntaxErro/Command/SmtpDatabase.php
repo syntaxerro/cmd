@@ -11,7 +11,7 @@ use SyntaxErro\Exception\FileNotReadableException;
 use SyntaxErro\Tools\AnswerStorage;
 
 
-class EmailDatabase extends Command
+class SmtpDatabase extends Command
 {
     use AnswerStorage;
 
@@ -23,7 +23,7 @@ class EmailDatabase extends Command
     }
 
     /**
-     * Execute smtp:add command.
+     * Execute smtp:database command.
      *
      * @param InputInterface $input
      * @param OutputInterface $output
