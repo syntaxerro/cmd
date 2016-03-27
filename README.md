@@ -31,11 +31,6 @@ sudo curl -k https://cdn.rawgit.com/syntaxerro/cmd/master/bash/install.sh | bash
 ./app.php http:add example.com --ssl
 ```
 
-- Cat all rotated logs in directory.
-```
-./app.php rotate:cat /var/log/nginx example.com
-```
-
 - Adding aliases, users or domains to postfix + dovecot database.
 ```
 ./app.php smtp:add [alias|user|domain]
@@ -68,4 +63,9 @@ new_domain: "INSERT INTO virtual_domains SET name='%s'"
 - Removing blacklist or whitelist items from SpamAssassin user preferences database.
 ```
 ./app.php spam:rm [black|white]
+```
+
+- Cat all rotated logs in directory.
+```
+./app.php catr /var/log/nginx example.com
 ```

@@ -27,7 +27,7 @@ class HttpAdd extends Command
     {
         $this
             ->setName('http:add')
-            ->setDescription('Create new apache2.4 org nginx vhost.')
+            ->setDescription('Create new vhost from template.')
             ->addArgument(
                 'domain',
                 InputArgument::REQUIRED,

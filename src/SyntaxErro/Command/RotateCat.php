@@ -24,7 +24,7 @@ class RotateCat extends Command
     protected function configure()
     {
         $this
-            ->setName('rotate:cat')
+            ->setName('catr')
             ->setDescription('Cat all rotated logs.')
             ->addArgument(
                 'dir',

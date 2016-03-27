@@ -25,7 +25,7 @@ class Kernel
      */
     public function __construct()
     {
-        $this->app = new Application("Syntaxerro CMD Tools", "0.1.0 alpha");
+        $this->app = new Application("Syntaxerro CMD Tools", "0.1.5");
     }
 
     /**
