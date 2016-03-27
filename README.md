@@ -61,6 +61,11 @@ curl -k https://cdn.rawgit.com/syntaxerro/cmd/master/bash/install.sh | sudo bash
 new_domain: "INSERT INTO virtual_domains SET name='%s'"
 ```
 
+- Creating default postfix, dovecot and spamassassin database schema.
+```
+./app.php smtp:database
+```
+
 - Add blacklist or whitelist items to SpamAssassin user preferences database.
 ```
 ./app.php spam:add [black|white]
