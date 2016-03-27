@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+# Letsencrypt official-client installer.
+
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+if [ ! -d "$DIR/../letsencrypt" ]; then
+    git clone https://github.com/letsencrypt/letsencrypt "$DIR/../letsencrypt"
+fi
+
+"$DIR/../letsencrypt/letsencrypt-auto"
