@@ -1,5 +1,15 @@
 #!/usr/bin/env bash
 
+if ! type "git" > /dev/null 2>&1; then
+  echo "Cannot install without git.";
+  exit;
+fi
+
+if ! type "composer" > /dev/null 2>&1; then
+  echo "Cannot install without composer.";
+  exit;
+fi
+
 git clone https://github.com/syntaxerro/cmd
 cd cmd && composer install
 
