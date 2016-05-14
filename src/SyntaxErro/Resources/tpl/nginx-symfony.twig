@@ -1,0 +1,80 @@
+upstream phpfcgi {
+    server {{ FastcgiPass|default('127.0.0.1:9000') }};
+    # server unix:/var/run/php5-fpm.sock; #for PHP-FPM running on UNIX socket
+}
+server {
+    listen 80;
+
+    server_name {{ ServerName }} www.{{ ServerName }} {% for alias in ServerAlias %}{{ alias }} {% endfor %};
+    root {{ DocumentRoot }};
+
+    access_log /var/log/nginx/{{ ServerName }}_access.log;
+    error_log /var/log/nginx/{{ ServerName }}_error.log;
+
+    {% if SSLCertificateFile %}
+        if ($http_user_agent !~ "Windows.*NT\ 5") {
+            return 301 https://{{ ServerName }}$request_uri;
+        }
+    {% endif %}
+
+    # strip app.php/ prefix if it is present
+    rewrite ^/app\.php/?(.*)$ /$1 permanent;
+
+    location / {
+        index app.php;
+        try_files $uri @rewriteapp;
+    }
+
+    location @rewriteapp {
+        rewrite ^(.*)$ /app.php/$1 last;
+    }
+
+    # pass the PHP scripts to FastCGI server from upstream phpfcgi
+    location ~ ^/(app|app_dev|config)\.php(/|$) {
+        fastcgi_pass phpfcgi;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+        fastcgi_param  SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param  HTTPS off;
+    }
+}
+
+
+{% if SSLCertificateFile %}
+server {
+    listen 443;
+
+    server_name {{ ServerName }} www.{{ ServerName }} {% for alias in ServerAlias %}{{ alias }} {% endfor %};
+    root {{ DocumentRoot }};
+
+    ssl on;
+    ssl_certificate_key {{ SSLCertificateKeyFile }};
+    ssl_certificate {{ SSLCertificateFile }};
+    ssl_ciphers 'ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-AES256-GCM-SHA384:DHE-RSA-AES128-GCM-SHA256:DHE-DSS-AES128-GCM-SHA256:kEDH+AESGCM:ECDHE-RSA-AES128-SHA256:ECDHE-ECDSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:ECDHE-ECDSA-AES128-SHA:ECDHE-RSA-AES256-SHA384:ECDHE-ECDSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:ECDHE-ECDSA-AES256-SHA:DHE-RSA-AES128-SHA256:DHE-RSA-AES128-SHA:DHE-DSS-AES128-SHA256:DHE-RSA-AES256-SHA256:DHE-DSS-AES256-SHA:DHE-RSA-AES256-SHA:AES128-GCM-SHA256:AES256-GCM-SHA384:AES128-SHA256:AES256-SHA256:AES128-SHA:AES256-SHA:AES:CAMELLIA:DES-CBC3-SHA:!aNULL:!eNULL:!EXPORT:!DES:!RC4:!MD5:!PSK:!aECDH:!EDH-DSS-DES-CBC3-SHA:!EDH-RSA-DES-CBC3-SHA:!KRB5-DES-CBC3-SHA';
+
+
+    access_log /var/log/nginx/{{ ServerName }}_access.log;
+    error_log /var/log/nginx/{{ ServerName }}_error.log;
+
+    # strip app.php/ prefix if it is present
+    rewrite ^/app\.php/?(.*)$ /$1 permanent;
+
+    location / {
+        index app.php;
+        try_files $uri @rewriteapp;
+    }
+
+    location @rewriteapp {
+        rewrite ^(.*)$ /app.php/$1 last;
+    }
+
+    # pass the PHP scripts to FastCGI server from upstream phpfcgi
+    location ~ ^/(app|app_dev|config)\.php(/|$) {
+        fastcgi_pass phpfcgi;
+        fastcgi_split_path_info ^(.+\.php)(/.*)$;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        fastcgi_param HTTPS on;
+    }
+}
+{% endif %}

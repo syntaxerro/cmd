@@ -123,6 +123,10 @@ class HttpAdd extends Command
             }
         }
 
+        if($nginx) {
+            $fastcgiPass = $this->ask($input, $output, 'PHP-FPM fastcgi_pass: ', 'php_fastcgi_pass');
+        }
+
         /* Add server aliases. */
         $aliases = [];
         $aliasQuestion = new Question("Add server aliases. WWW prefix will be auto added. <info>[Press enter/return for finish]</info> ");
@@ -134,7 +138,7 @@ class HttpAdd extends Command
         /* Initialize twig and render configuration from template. */
         $this->initTwig();
         $tplPath = $nginx ? 'nginx-vhost.twig' : 'apache-vhost.twig';
-        if($template) $tplPath = $template;
+        if($template) $tplPath = $template.".twig";
         $configurationContent = $this->render($tplPath, [
             'ServerName' => $domain,
             'ServerAdmin' => $email,
@@ -142,7 +146,8 @@ class HttpAdd extends Command
             'ServerAlias' => $aliases,
             'SSLCertificateFile' => isset($certRoot) && isset($cert) ? $certRoot.$cert : false,
             'SSLCertificateKeyFile' => isset($certRoot) && isset($key) ? $certRoot.$key : false,
-            'SSLCertificateChainFile' => isset($certRoot) && isset($chain) ? $certRoot.$chain : false
+            'SSLCertificateChainFile' => isset($certRoot) && isset($chain) ? $certRoot.$chain : false,
+            'FastcgiPass' => isset($fastcgiPass) ? $fastcgiPass : false
         ]);
 
         /* Confirm and save or abort. */

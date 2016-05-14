@@ -30,7 +30,12 @@ curl -k https://cdn.rawgit.com/syntaxerro/cmd/master/bash/install.sh | sudo bash
 
 - Custom configuration templates [SyntaxErro/Resources/tpl](https://github.com/syntaxerro/cmd/blob/master/src/SyntaxErro/Resources/tpl).
 ```
-./app.php http:add example.com --template "custom-template-name.twig"
+./app.php http:add example.com --template "custom-template-name"
+```
+
+- Builtin nginx symfony vhost template.
+```
+./app.php http:add example.com --nginx --template 'nginx-symfony'
 ```
 
 - Create vhost with SSL support and auto redirection for not supported SNI certificates.
