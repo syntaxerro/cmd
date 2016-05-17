@@ -8,11 +8,11 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use SyntaxErro\Model\CustomQueries;
-use SyntaxErro\Tools\AnswerStorage;
+use SyntaxErro\Tools\Mysql;
 
 class SpamRemove extends Command
 {
-    use AnswerStorage;
+    use Mysql;
 
     protected function configure()
     {
@@ -37,18 +37,8 @@ class SpamRemove extends Command
         $allowTypes = ['black', 'white'];
         if(!in_array(strtolower($type), $allowTypes)) throw new \UnexpectedValueException(sprintf("Type '%s' is invalid for spam:rm command.", $type));
         $questioner = $this->getHelper('question');
-        $output->writeln("<info>Login into mySQL: </info>");
-        /* Login into mySQL. */
-        $sqlHost = $this->ask($input, $output, "Host:", 'mysql_host');
-        $sqlUsername = $this->ask($input, $output, "Username:", 'mysql_username');
-        $sqlDatabase = $this->ask($input, $output, "Database name:", 'mysql_database');
-        $passwordQuestion = new Question("Password: ");
-        $passwordQuestion->setHidden(true);
-        $sqlPassword = $questioner->ask($input, $output, $passwordQuestion);
 
-        $pdo = new \PDO("mysql:host=$sqlHost;dbname=$sqlDatabase;charset=utf8", $sqlUsername, $sqlPassword);
-        $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-        $output->write("Connected.".PHP_EOL.PHP_EOL);
+        $pdo = $this->mysqlLogin($questioner, $input, $output);
 
         $output->writeln("MODE: Removing from {$type}list.");
 
