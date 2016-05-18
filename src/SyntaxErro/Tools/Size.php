@@ -32,7 +32,7 @@ class Size
     {
         $this->size = 0;
         foreach(new \DirectoryIterator($path) as $item) {
-            if(!$item->isDot() && $item->isFile()) $this->size += $item->getSize();
+            if($item->isFile()) $this->size += $item->getSize();
             if(!$item->isDot() && $item->isDir()) $this->readFiles($item->getPathname());
         }
         return $this;
