@@ -45,6 +45,11 @@ user_exist: "SELECT 1 FROM virtual_users WHERE email='%s'"
 # Parameters: firstly plain text new password from console, next user email
 update_password: "UPDATE virtual_users SET password = ENCRYPT('%s', CONCAT('$6$', SUBSTRING(SHA(RAND()), -16))) WHERE email = '%s'"
 
+# *** Count users in domain. ***
+#
+# Required cnt key.
+count_users: "SELECT count(1) AS cnt FROM virtual_users WHERE domain_id='%s'"
+
 
 # ---------------------------- ALIASES ----------------------------
 # *** Adding new alias. ***
