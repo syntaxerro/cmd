@@ -43,6 +43,11 @@ curl -k https://cdn.rawgit.com/syntaxerro/cmd/master/bash/install.sh | sudo bash
 ./app.php http:add example.com --ssl
 ```
 
+- List users or domains from postfix + dovecot database.
+```
+./app.php smtp:list [user|domain]
+```
+
 - Adding aliases, users or domains to postfix + dovecot database.
 ```
 ./app.php smtp:add [alias|user|domain]
