@@ -66,7 +66,7 @@ class HttpAdd extends Command
 
         $questioner = $this->getHelper('question');
         /* Get parameters from user. */
-        $domain = $input->getArgument('domain');
+        $domain = str_replace(DIRECTORY_SEPARATOR, '', $input->getArgument('domain'));
         $ssl = $input->getOption('ssl');
         $nginx = $input->getOption('nginx');
         $template = $input->getOption('template');
