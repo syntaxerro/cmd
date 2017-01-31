@@ -11,6 +11,7 @@ server {
     {% endif %}
 
     location / {
+        include /etc/nginx/proxy_params;
         proxy_pass http://{{ proxyURI }};
     }
 
@@ -36,6 +37,7 @@ server {
         server_name {{ ServerName }} www.{{ ServerName }} {% for alias in ServerAlias %}{{ alias }} {% endfor %};
 
         location / {
+            include /etc/nginx/proxy_params;
             proxy_pass http://{{ proxyURI }};
         }
 
