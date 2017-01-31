@@ -123,8 +123,12 @@ class HttpAdd extends Command
             }
         }
 
-        if($nginx) {
+        if($nginx && $template != 'nginx-proxy') {
             $fastcgiPass = $this->ask($input, $output, 'PHP-FPM fastcgi_pass: ', 'php_fastcgi_pass');
+        }
+
+        if($template == 'nginx-proxy') {
+            $proxyURI = $this->ask($input, $output, 'NGINX proxy_pass http://', 'nginx_proxy_pass');
         }
 
         /* Add server aliases. */
@@ -147,7 +151,8 @@ class HttpAdd extends Command
             'SSLCertificateFile' => isset($certRoot) && isset($cert) ? $certRoot.$cert : false,
             'SSLCertificateKeyFile' => isset($certRoot) && isset($key) ? $certRoot.$key : false,
             'SSLCertificateChainFile' => isset($certRoot) && isset($chain) ? $certRoot.$chain : false,
-            'FastcgiPass' => isset($fastcgiPass) ? $fastcgiPass : false
+            'FastcgiPass' => isset($fastcgiPass) ? $fastcgiPass : false,
+            'proxyURI' => isset($proxyURI) ? $proxyURI : false,
         ]);
 
         /* Confirm and save or abort. */
