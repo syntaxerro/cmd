@@ -12,6 +12,7 @@ use Symfony\Component\Console\Question\Question;
 use SyntaxErro\Exception\CannotWriteException;
 use SyntaxErro\Exception\FileNotFoundException;
 use SyntaxErro\Tools\AnswerStorage;
+use SyntaxErro\Tools\ProxyMap;
 use SyntaxErro\Tools\Twig;
 
 class HttpAdd extends Command
@@ -128,7 +129,19 @@ class HttpAdd extends Command
         }
 
         if($template == 'nginx-proxy') {
-            $proxyURI = $this->ask($input, $output, 'NGINX proxy_pass http://', 'nginx_proxy_pass');
+            $proxyMap = new ProxyMap();
+            if($proxyMap->isMapped($domain)) {
+                $proxyURI = $proxyMap->getIpFor($domain);
+                $output->writeln('Used '.$proxyURI.' as proxy from proxy.map!');
+            } else {
+                $proxyQuestion = new Question('NGINX proxy_pass http://');
+                $proxyURI = $questioner->ask($input, $output, $proxyQuestion);
+                $qSaveInProxyMap = new ConfirmationQuestion(sprintf('Do you want to cache %s assignment to %s domain? Y/n', $proxyURI, $domain), true, '/^y|Y|t|T/i');
+                $wantSaveInProxyMap = $questioner->ask($input, $output, $qSaveInProxyMap);
+                if($wantSaveInProxyMap) {
+                    $proxyMap->setMap($domain, $proxyURI);
+                }
+            }
         }
 
         /* Add server aliases. */
