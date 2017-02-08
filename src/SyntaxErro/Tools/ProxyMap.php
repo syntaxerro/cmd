@@ -7,13 +7,15 @@ class ProxyMap
 {
     const FILE_PATH = __DIR__.'/../../../cache/proxy.map';
 
+    const DELIMITER = '::';
+
     private $map = [];
 
     public function __construct()
     {
         if(!file_exists(static::FILE_PATH)) file_put_contents(static::FILE_PATH, '');
         foreach(explode(PHP_EOL, file_get_contents(static::FILE_PATH)) as $line) {
-            $divided = explode(':', $line);
+            $divided = explode(static::DELIMITER, $line);
             if(count($divided) < 2) continue;
             $this->map[trim($divided[0])] = trim($divided[1]);
         }
@@ -23,7 +25,7 @@ class ProxyMap
     {
         $content = '';
         foreach($this->map as $domain => $ip) {
-            $content .= $domain.':'.$ip.PHP_EOL;
+            $content .= $domain.static::DELIMITER.$ip.PHP_EOL;
         }
         file_put_contents(static::FILE_PATH, $content);
         return $this;
